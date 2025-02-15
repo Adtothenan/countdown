@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lejlic's Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ADD8E6;
+            color: #333;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+        #quiz, #countdown {
+            font-size: 1.5em;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .heart {
+            color: #e74c3c;
+            font-size: 1.2em;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="mainHeading">Lejlic's Quiz</h1>
+    <div id="quiz"></div>
+    <div id="feedback"></div>
+    <div id="countdown" style="display: none;"></div>
+    
+    <script>
+        const allQuestions = [
+            {
+                question: "Wann wurde Adnan geboren?",
+                answers: ["28.10.1992", "01.01.1854", "29.10.1992"],
+                correct: 0
+            },
+            {
+                question: "Wie toll ist Adnan?",
+                answers: ["Schon heftig", "ÜBERTRIEBEN!", "PHENOMENTASTISCH"],
+                correct: 2
+            },
+            {
+                question: "Wo macht Lejla am liebsten Urlaub?",
+                answers: ["Sjenica", "Hartz", "JUNGE,Hauptsache STRAND!"],
+                correct: 2
+            },
+            {
+                question: "Beim unserem ersten Gespräch, was hattest du richtig erraten?",
+                answers: ["Adnans Bizepsumfang", "Adnans Studium", "Den Namen von Adnans Hamster"],
+                correct: 1
+            },
+            {
+                question: "Was war Adnans erstes Geschenk an Lejla?",
+                answers: ["Pikachu-Tasse", "Kugelschreiber", "Hundewelpe"],
+                correct: 0
+            },
+            {
+                question: "Was war unser erstes Fast-Konzert?",
+                answers: ["One Direction", "Dino Merlin", "Aco Pejovic"],
+                correct: 1
+            },
+             {
+                question: "Adnans Lieblingsgericht?",
+                answers: ["Pitta", "Lasagne", "Alles was Lejla zaubert"],
+                correct: 2
+            },
+            {
+                question: "Was wollten wir in Sarajevo zusammen probieren, haben es aber nicht geschafft?",
+                answers: ["Lamm", "Sushi", "Cevape"],
+                correct: 1
+            }
+           
+        ];
+
+        let questions = [];
+        let currentQuestion = 0;
+
+        function chooseQuestions() {
+            questions = [];
+            const availableQuestions = [...allQuestions]; // Kopie erstellen
+            for (let i = 0; i < 3; i++) {
+                const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                questions.push(availableQuestions[randomIndex]);
+                availableQuestions.splice(randomIndex, 1); // Verhindert doppelte Fragen
+            }
+        }
+
+        function displayQuestion() {
+            const quizDiv = document.getElementById("quiz");
+            const q = questions[currentQuestion];
+            let html = `<h2>${q.question}</h2>`;
+            for (let i = 0; i < q.answers.length; i++) {
+                html += `<button onclick="checkAnswer(${i})">${q.answers[i]}</button>`;
+            }
+            quizDiv.innerHTML = html;
+            document.getElementById("feedback").textContent = "";
+        }
+
+        function checkAnswer(answer) {
+            const feedbackDiv = document.getElementById("feedback");
+            if (answer === questions[currentQuestion].correct) {
+                feedbackDiv.textContent = "Richtige Antwort!";
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    document.getElementById("quiz").style.display = "none";
+                    feedbackDiv.style.display = "none";
+                    document.getElementById("countdown").style.display = "block";
+                    document.getElementById("mainHeading").textContent = "Lejlic's Countdown ❤️";
+                    startCountdown();
+                }
+            } else {
+                feedbackDiv.textContent = "Falsche Antwort. Versuche es nochmal!";
+            }
+        }
+
+        function startCountdown() {
+            const zielDatum = new Date("2025-02-20T12:00:00").getTime();
+        
+            function updateCountdown() {
+                const jetzt = new Date().getTime();
+                const restzeit = zielDatum - jetzt;
+                
+                if (restzeit > 0) {
+                    const tage = Math.floor(restzeit / (1000 * 60 * 60 * 24));
+                    const stunden = Math.floor((restzeit % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minuten = Math.floor((restzeit % (1000 * 60 * 60)) / (1000 * 60));
+                    const sekunden = Math.floor((restzeit % (1000 * 60)) / 1000);
+                    
+                    document.getElementById("countdown").innerHTML = `${tage}T ${stunden}H ${minuten}M ${sekunden}S`;
+                } else {
+                    document.getElementById("countdown").innerHTML = "Hoher Weg 3, Hildesheim - ❤️ Etwas wartet unter deinem Namen auf dich ❤️";
+                }
+            }
+            
+            setInterval(updateCountdown, 1000);
+            updateCountdown();
+        }
+
+        chooseQuestions();
+        displayQuestion();
+    </script>
+</body>
+</html>
